@@ -1,13 +1,22 @@
 export class InMemoryStorage {
     private tasks: Task[] = [];
 
-    public addTask(task: Task): void {
-        this.tasks.push(task);
+    // returns the id
+    public save(task: Omit<Task, 'id' | 'creationDate'>): string {
+        const id = crypto.randomUUID();
 
-        console.log(`Task added: ${task.title} with id ${task.id}`);
+        this.tasks.push({
+            ...task,
+            id: id,
+            creationDate: new Date().toISOString()
+        });
+
+        console.log(`Task added: ${task.title} with id ${id}`);
+
+        return id;
     }
     
-    public getTasks(): Task[] {
-        return this.tasks;
+    public byId(id: string): Task | undefined {
+        return this.tasks.find(task => task.id === id);
     }
 }

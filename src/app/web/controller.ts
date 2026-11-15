@@ -1,6 +1,7 @@
 import { publicProcedure, router } from './trpc';
 import { z } from 'zod';
 import { InMemoryStorage } from '../data/InMemoryStorage';
+import { TRPCError } from '@trpc/server';
 
 const storage = new InMemoryStorage();
 
@@ -14,13 +15,8 @@ export const controller = router({
         })
     )
     .mutation(({ input }) => {
-        const task: Task = {
-            ...input,
-            id: crypto.randomUUID(),
-            creationDate: new Date().toISOString()
-        }
-
-        storage.addTask(task);
+        const id = storage.save(input);
+        const task = storage.byId(id);
 
         return task;
     })
